@@ -5,6 +5,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.aop.support.AopUtils;
+import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -18,11 +20,10 @@ public class BukkitCommandHandler {
 
     public static void registerCommands(Object cls) {
         try {
-            Object cl = cls;
-            for (Method mt : cl.getClass().getMethods()) {
+            for (Method mt : ReflectionUtils.getAllDeclaredMethods(AopUtils.getTargetClass(cls))) {
                 CommandMapping at = mt.getAnnotation(CommandMapping.class);
                 if (at != null) {
-                    $registerCommands(at, mt, cl);
+                    $registerCommands(at, mt, cls);
                 }
             }
         } catch (Exception ex) {

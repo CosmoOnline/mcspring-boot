@@ -4,6 +4,7 @@ import dev.alangomes.springspigot.annotation.CommandMapping;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
+import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -81,16 +82,13 @@ public class BukkitCommandImpl extends BukkitCommand {
     }
 
     private void executeMethod(SubCommandContainer sc, CommandSender sender, String[] args) {
-        try {
-            UUID uuid = null;
-            if (sender instanceof Player)
-                uuid = ((Player) sender).getUniqueId();
-            final UUID uk = uuid;
-            Object[] target = paramBuilder(sc.getMethod(), getParamContainer(sender, args, this.getName()), uuid);
-            sc.getMethod().invoke(sc.getPathClass(), target);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
+        UUID uuid = null;
+        if (sender instanceof Player)
+            uuid = ((Player) sender).getUniqueId();
+        final UUID uk = uuid;
+        Object[] target = paramBuilder(sc.getMethod(), getParamContainer(sender, args, this.getName()), uuid);
+        ReflectionUtils.invokeMethod(sc.getMethod(), sc.getPathClass(), target);
+        // sc.getMethod().invoke(sc.getPathClass(), target);
     }
 
     private HashMap<Class<?>, Object> getParamContainer(CommandSender sender, String[] args, String label) {
