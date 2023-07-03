@@ -1,0 +1,3 @@
+name: SpigotSpring
+version: 0.20.7
+main: dev.alangomes.springspigot.SpringSpigotBootstrapper

@@ -18,7 +18,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -29,7 +28,6 @@ import org.springframework.scheduling.annotation.SchedulingConfiguration;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_SINGLETON;
 
 @Configuration
-@ComponentScan("dev.alangomes.springspigot")
 @ConditionalOnClass({Bukkit.class})
 class SpringSpigotAutoConfiguration {
 

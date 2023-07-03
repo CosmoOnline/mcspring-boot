@@ -1,39 +1,53 @@
 package dev.alangomes.springspigot;
 
+import dev.alangomes.springspigot.util.CompoundClassLoader;
+import lombok.SneakyThrows;
 import lombok.val;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
+
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public final class SpringSpigotBootstrapper {
+public final class SpringSpigotBootstrapper extends JavaPlugin{
+    private ConfigurableApplicationContext context;
 
-    private SpringSpigotBootstrapper() {
+    @SneakyThrows
+    @Override
+    public void onEnable() {
+        val classLoader = new CompoundClassLoader(Thread.currentThread().getContextClassLoader(), getClassLoader());
+        val pluginClasses = Arrays.stream(Bukkit.getPluginManager().getPlugins())
+                .filter(plugin -> plugin instanceof JavaPlugin && plugin.getClass().isAnnotationPresent(EnableSpringSpigotSupport.class))
+                .toList();
+        context = initialize(this, classLoader, new SpringApplicationBuilder(), pluginClasses);
+
+        for(String names : context.getBeanDefinitionNames()){
+            System.out.println(names);
+        }
     }
 
-//    public static ConfigurableApplicationContext initialize(JavaPlugin plugin, Class<?> applicationClass) throws ExecutionException, InterruptedException {
-//        CompoundClassLoader classLoader = new CompoundClassLoader(plugin.getClass().getClassLoader(), Thread.currentThread().getContextClassLoader());
-//        return initialize(plugin, classLoader, new SpringApplicationBuilder(applicationClass));
-//    }
-//
-//    public static ConfigurableApplicationContext initialize(JavaPlugin plugin, SpringApplicationBuilder builder) throws ExecutionException, InterruptedException {
-//        CompoundClassLoader classLoader = new CompoundClassLoader(plugin.getClass().getClassLoader(), Thread.currentThread().getContextClassLoader());
-//        return initialize(plugin, classLoader, builder);
-//    }
-
-    public static ConfigurableApplicationContext initialize(JavaPlugin plugin, ClassLoader classLoader, Class<?> applicationClass) throws ExecutionException, InterruptedException {
-        return initialize(plugin, classLoader, new SpringApplicationBuilder(applicationClass));
+    @Override
+    public void onDisable() {
+        context.close();
+        context = null;
     }
 
-    public static ConfigurableApplicationContext initialize(JavaPlugin plugin, ClassLoader classLoader, SpringApplicationBuilder builder) throws ExecutionException, InterruptedException {
+    public static ConfigurableApplicationContext initialize(JavaPlugin plugin, ClassLoader classLoader, SpringApplicationBuilder builder, List<Plugin> plugins) throws ExecutionException, InterruptedException {
         val executor = Executors.newSingleThreadExecutor();
         try {
             Future<ConfigurableApplicationContext> contextFuture = executor.submit(() -> {
                 Thread.currentThread().setContextClassLoader(classLoader);
+
+                val pluginClassesList = plugins.stream().map(Plugin::getClass).toList();
+                val pluginClassesArray = pluginClassesList.toArray(new Class[0]);
 
                 val props = new Properties();
                 try {
@@ -48,6 +62,8 @@ public final class SpringSpigotBootstrapper {
                 return builder
                         .properties(props)
                         .initializers(new SpringSpigotInitializer(plugin))
+                        .child(pluginClassesArray)
+                        .parent(SpringSpigotApplication.class)
                         .run();
             });
             return contextFuture.get();
