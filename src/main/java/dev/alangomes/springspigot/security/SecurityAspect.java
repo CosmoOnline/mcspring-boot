@@ -40,18 +40,14 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 @Scope(SCOPE_SINGLETON)
 class SecurityAspect {
 
+    private final Map<String, Expression> expressionCache = new ConcurrentHashMap<>();
+    private final ExpressionParser parser = new SpelExpressionParser();
     @Autowired
     private Context context;
-
     @Autowired
     private SessionService sessionService;
-
     @Autowired(required = false)
     private GuardService guardService;
-
-    private final Map<String, Expression> expressionCache = new ConcurrentHashMap<>();
-
-    private final ExpressionParser parser = new SpelExpressionParser();
 
     @Order(0)
     @Around("within(@(@dev.alangomes.springspigot.security.Authorize *) *) " +

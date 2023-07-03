@@ -3,12 +3,7 @@ package dev.alangomes.springspigot.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 
 /**
  * A ClassLoader implementation that iterates over a collection of other ClassLoaders until it finds everything it's looking for.
@@ -17,10 +12,11 @@ import java.util.List;
  */
 public class CompoundClassLoader extends ClassLoader {
 
-    private Collection<ClassLoader> _loaders;
+    private final Collection<ClassLoader> _loaders;
 
     /**
      * Constructs a new CompoundClassLoader.
+     *
      * @param loaders the loaders to iterate over
      */
     public CompoundClassLoader(ClassLoader... loaders) {
@@ -29,6 +25,7 @@ public class CompoundClassLoader extends ClassLoader {
 
     /**
      * Constructs a new CompoundClassLoader.
+     *
      * @param loaders the loaders to iterate over
      */
     public CompoundClassLoader(Collection<ClassLoader> loaders) {

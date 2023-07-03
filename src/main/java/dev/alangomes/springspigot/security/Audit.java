@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * Marks a method or all classes in method as auditable.
- *
+ * <p>
  * All method calls will be logged with the caller name (if available) and parameter info.
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
@@ -17,7 +17,7 @@ public @interface Audit {
     /**
      * Declares whether the audit requires a {@link org.bukkit.command.CommandSender CommandSender} as caller.
      * If true, all calls not originated from a {@link org.bukkit.command.CommandSender CommandSender} will be ignored.
-     *
+     * <p>
      * Defaults to {@code true}
      */
     boolean senderOnly() default true;

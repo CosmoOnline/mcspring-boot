@@ -33,10 +33,9 @@ public class ServerUtil {
         if (sender == null) {
             return null;
         }
-        if (!(sender instanceof OfflinePlayer)) {
+        if (!(sender instanceof OfflinePlayer player)) {
             return CONSOLE_SENDER_ID;
         }
-        val player = (OfflinePlayer) sender;
         return server.getOnlineMode() ? player.getUniqueId().toString() : StringUtils.lowerCase(player.getName());
     }
 

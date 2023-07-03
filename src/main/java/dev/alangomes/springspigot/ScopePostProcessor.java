@@ -13,7 +13,7 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 
 class ScopePostProcessor implements BeanFactoryPostProcessor {
 
-    private SenderContextScope senderContextScope;
+    private final SenderContextScope senderContextScope;
 
     ScopePostProcessor(SenderContextScope senderContextScope) {
         this.senderContextScope = senderContextScope;

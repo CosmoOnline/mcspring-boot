@@ -8,9 +8,9 @@ import java.lang.annotation.Target;
 /**
  * Utility annotation to force method to be called in the Bukkit main thread.
  * All calls outside the main thread will be scheduled to the next server tick.
- *
+ * <p>
  * If the method returns value, the value will be {@code null}.
- *
+ * <p>
  * If the call originate from the main thread, it will be executed normally.
  */
 @Target({ElementType.METHOD, ElementType.TYPE})

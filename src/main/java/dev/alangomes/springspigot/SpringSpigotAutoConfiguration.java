@@ -1,6 +1,5 @@
 package dev.alangomes.springspigot;
 
-import api.cosmoage.global.sql.ConnectionPoolManager;
 import dev.alangomes.springspigot.context.Context;
 import dev.alangomes.springspigot.event.EventService;
 import dev.alangomes.springspigot.scope.SenderContextScope;
@@ -37,6 +36,11 @@ class SpringSpigotAutoConfiguration {
 
     private boolean initialized = false;
 
+    @Bean
+    public static BeanFactoryPostProcessor scopeBeanFactoryPostProcessor(SenderContextScope scope) {
+        return new ScopePostProcessor(scope);
+    }
+
     @EventListener
     void onStartup(ContextRefreshedEvent event) {
         if (initialized) return;
@@ -69,15 +73,5 @@ class SpringSpigotAutoConfiguration {
     @Bean(destroyMethod = "")
     BukkitScheduler schedulerBean(Server server) {
         return server.getScheduler();
-    }
-
-    @Bean
-    public static BeanFactoryPostProcessor scopeBeanFactoryPostProcessor(SenderContextScope scope) {
-        return new ScopePostProcessor(scope);
-    }
-
-    @Bean
-    public ConnectionPoolManager connectionPoolManager() {
-        return ConnectionPoolManager.getInternalPool();
     }
 }

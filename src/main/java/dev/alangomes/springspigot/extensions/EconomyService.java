@@ -28,9 +28,9 @@ public interface EconomyService {
     /**
      * Transfer balance from one player to another
      *
-     * @param origin to withdraw from
+     * @param origin      to withdraw from
      * @param destination to deposit to
-     * @param amount Amount to transfer
+     * @param amount      Amount to transfer
      */
     void transfer(OfflinePlayer origin, OfflinePlayer destination, BigDecimal amount);
 

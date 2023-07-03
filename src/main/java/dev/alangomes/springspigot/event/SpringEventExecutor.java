@@ -30,6 +30,6 @@ public class SpringEventExecutor {
 
     @SneakyThrows
     private void triggerEvent(Method method, Listener listener, Event event) {
-        AopUtils.invokeJoinpointUsingReflection(listener, method, new Object[] {event});
+        AopUtils.invokeJoinpointUsingReflection(listener, method, new Object[]{event});
     }
 }

@@ -19,13 +19,11 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 @Scope(SCOPE_SINGLETON)
 public class DefaultSessionService implements SessionService, Listener {
 
+    private final Map<String, Map<String, Object>> sessions = new ConcurrentHashMap<>();
     @Autowired
     private Context context;
-
     @Autowired
     private ServerUtil serverUtil;
-
-    private final Map<String, Map<String, Object>> sessions = new ConcurrentHashMap<>();
 
     @Override
     public Map<String, Object> current() {

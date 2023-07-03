@@ -18,7 +18,7 @@ public @interface Authorize {
      * The expression to be ran before the method is called.
      * If the expression evaluates to {@code false}, the call will automatically throw a {@link dev.alangomes.springspigot.exception.PermissionDeniedException PermissionDeniedException}.
      * If there's no sender in the current context, the method will throw a {@link dev.alangomes.springspigot.exception.PlayerNotFoundException PlayerNotFoundException}.
-     *
+     * <p>
      * E.g.: @Authorize("hasPermission('test.permission') or isOp()")
      *
      * @see <a href="https://docs.spring.io/spring/docs/3.0.x/reference/expressions.html#expressions-language-ref">Language Reference</a>
@@ -33,6 +33,7 @@ public @interface Authorize {
 
     /**
      * Additional parameters that will be set on the expression as {@code #params}.
+     *
      * @see dev.alangomes.springspigot.security.HasPermission
      */
     String[] params() default {};

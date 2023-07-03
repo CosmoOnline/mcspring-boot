@@ -29,8 +29,7 @@ public class EventUtil {
             return ((PlayerEvent) event).getPlayer();
         } else if (event instanceof ServerCommandEvent) {
             return ((ServerCommandEvent) event).getSender();
-        } else if (event instanceof EntityEvent) {
-            val entityEvent = (EntityEvent) event;
+        } else if (event instanceof EntityEvent entityEvent) {
             return entityEvent.getEntity() instanceof Player ? entityEvent.getEntity() : null;
         }
         return getInferredSender(event);

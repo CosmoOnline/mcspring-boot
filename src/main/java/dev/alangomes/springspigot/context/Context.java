@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,11 +27,9 @@ public class Context {
 
     @Getter
     private static Context instance;
-
+    private final Map<Long, String> senderRefs = new ConcurrentHashMap<>();
     @Autowired
     private ServerUtil serverUtil;
-
-    private final Map<Long, String> senderRefs = new ConcurrentHashMap<>();
 
     @PostConstruct
     void init() {
@@ -40,20 +39,6 @@ public class Context {
     @PreDestroy
     void destroy() {
         instance = null;
-    }
-
-    /**
-     * Set the current sender in the thread context.
-     *
-     * @param sender The new {@link org.bukkit.command.CommandSender} of the context.
-     */
-    void setSender(CommandSender sender) {
-        val threadId = Thread.currentThread().getId();
-        if (sender == null) {
-            senderRefs.remove(threadId);
-            return;
-        }
-        senderRefs.put(threadId, serverUtil.getSenderId(sender));
     }
 
     /**
@@ -74,6 +59,20 @@ public class Context {
     public CommandSender getSender() {
         val senderRef = senderRefs.get(Thread.currentThread().getId());
         return serverUtil.getSenderFromId(senderRef);
+    }
+
+    /**
+     * Set the current sender in the thread context.
+     *
+     * @param sender The new {@link org.bukkit.command.CommandSender} of the context.
+     */
+    void setSender(CommandSender sender) {
+        val threadId = Thread.currentThread().getId();
+        if (sender == null) {
+            senderRefs.remove(threadId);
+            return;
+        }
+        senderRefs.put(threadId, serverUtil.getSenderId(sender));
     }
 
     /**
