@@ -1,5 +1,6 @@
 package dev.alangomes.springspigot;
 
+import api.cosmoage.global.sql.ConnectionPoolManager;
 import dev.alangomes.springspigot.context.Context;
 import dev.alangomes.springspigot.event.EventService;
 import dev.alangomes.springspigot.scope.SenderContextScope;
@@ -73,5 +74,10 @@ class SpringSpigotAutoConfiguration {
     @Bean
     public static BeanFactoryPostProcessor scopeBeanFactoryPostProcessor(SenderContextScope scope) {
         return new ScopePostProcessor(scope);
+    }
+
+    @Bean
+    public ConnectionPoolManager connectionPoolManager() {
+        return ConnectionPoolManager.getInternalPool();
     }
 }
