@@ -1,6 +1,5 @@
 package dev.alangomes.springspigot.commands;
 
-import api.cosmoage.global.GlobalCache;
 import dev.alangomes.springspigot.annotation.CommandMapping;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
@@ -112,14 +111,6 @@ public class BukkitCommandImpl extends BukkitCommand {
             Object obj = paramContainer.get(type);
             if (obj == null) {
                 obj = BukkitCommandHandler.globalInstanceMap.get(type);
-                if (obj == null) {
-                    if (player != null) {
-                        HashMap<Class<?>, Object> instmap = GlobalCache.getInstanceMap().get(player);
-                        if (instmap != null) {
-                            obj = instmap.get(type);
-                        }
-                    }
-                }
             }
             arr[pos++] = obj;
         }
