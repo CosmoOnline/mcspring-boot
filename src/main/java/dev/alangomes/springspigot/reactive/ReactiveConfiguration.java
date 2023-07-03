@@ -1,8 +1,9 @@
 package dev.alangomes.springspigot.reactive;
 
 import dev.alangomes.springspigot.context.Context;
-import io.reactivex.Observable;
-import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import jakarta.annotation.PreDestroy;
 import lombok.val;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -14,7 +15,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
-import javax.annotation.PreDestroy;
 
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 

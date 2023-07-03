@@ -2,8 +2,9 @@ package dev.alangomes.springspigot.reactive;
 
 import dev.alangomes.springspigot.context.Context;
 import dev.alangomes.springspigot.event.EventUtil;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.core.ObservableEmitter;
+import io.reactivex.rxjava3.core.ObservableOnSubscribe;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,13 +30,14 @@ class EventEmitter<T extends Event> implements ObservableOnSubscribe<T> {
 
     Context context;
 
+
     @Override
-    public void subscribe(ObservableEmitter<T> observableEmitter) {
+    public void subscribe(@NonNull ObservableEmitter<T> emitter) throws Throwable {
         val pluginManager = plugin.getServer().getPluginManager();
         pluginManager.registerEvent(eventClazz, listener, observeEvent.priority(), (l, event) -> {
             if (eventClazz.isAssignableFrom(event.getClass())) {
                 T emittedEvent = (T) event;
-                context.runWithSender(EventUtil.getSender(emittedEvent), () -> observableEmitter.onNext(emittedEvent));
+                context.runWithSender(EventUtil.getSender(emittedEvent), () -> emitter.onNext(emittedEvent));
             }
         }, plugin, observeEvent.ignoreCancelled());
     }
