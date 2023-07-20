@@ -3,6 +3,7 @@ package dev.alangomes.springspigot;
 import dev.alangomes.springspigot.annotation.CommandMapping;
 import dev.alangomes.springspigot.commands.BukkitCommandHandler;
 import dev.alangomes.springspigot.util.CompoundClassLoader;
+import dev.alangomes.springspigot.util.YamlPropertiesFactory;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.bukkit.Bukkit;
@@ -14,10 +15,13 @@ import org.springframework.aop.support.AopUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -45,6 +49,11 @@ public final class SpringSpigotBootstrapper extends JavaPlugin {
     @SneakyThrows
     @Override
     public void onEnable() {
+        Bukkit.getScheduler().runTask(this, this::loadSpringSpigot);
+    }
+
+    @SneakyThrows
+    public void loadSpringSpigot() {
         val classLoaders = new ArrayList<ClassLoader>();
         classLoaders.add(Thread.currentThread().getContextClassLoader());
         classLoaders.add(getClassLoader());
@@ -80,21 +89,16 @@ public final class SpringSpigotBootstrapper extends JavaPlugin {
 
         combinedLoader = new CompoundClassLoader(classLoaders);
 
-
-
-        val props = new Properties();
-        try {
-            props.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("application.properties"));
-        } catch (Exception ignored) {
-        }
-
         val ctx = new AnnotationConfigApplicationContext();
         ctx.setResourceLoader(new DefaultResourceLoader(combinedLoader));
         ctx.setClassLoader(combinedLoader);
 
+        ctx.getEnvironment().getPropertySources().addLast(new PropertiesPropertySource("main-yaml", YamlPropertiesFactory.loadYamlIntoProperties(new FileSystemResource("application.yml"))));
+        ctx.getEnvironment().getPropertySources().forEach((ptx) -> System.out.println(ptx.getClass().getName() + " with " + ptx.getProperty("spring.datasource.url")));
+
         val initializer = new SpringSpigotInitializer(this);
         initializer.initialize(ctx);
-        ctx.scan("dev.alangomes.springspigot");
+        ctx.register(SpringSpigotApplication.class);
 
         CompoundClassLoader finalCombinedLoader1 = combinedLoader;
         pluginClasses.forEach(pluginzz -> {
