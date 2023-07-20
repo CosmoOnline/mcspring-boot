@@ -1,7 +1,7 @@
 package dev.alangomes.test;
 
-import dev.alangomes.springspigot.context.Context;
-import dev.alangomes.springspigot.util.Synchronize;
+import kr.chuyong.springspigot.context.Context;
+import kr.chuyong.springspigot.util.Synchronize;
 import dev.alangomes.test.util.SpringSpigotTestInitializer;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;

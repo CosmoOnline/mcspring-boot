@@ -1,6 +1,6 @@
 package dev.alangomes.test.util;
 
-import dev.alangomes.springspigot.SpringSpigotInitializer;
+import kr.chuyong.springspigot.SpringSpigotInitializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.configuration.file.FileConfiguration;

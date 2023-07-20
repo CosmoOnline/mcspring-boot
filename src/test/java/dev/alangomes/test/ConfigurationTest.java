@@ -1,7 +1,7 @@
 package dev.alangomes.test;
 
-import dev.alangomes.springspigot.configuration.DynamicValue;
-import dev.alangomes.springspigot.configuration.Instance;
+import kr.chuyong.springspigot.configuration.DynamicValue;
+import kr.chuyong.springspigot.configuration.Instance;
 import dev.alangomes.test.util.SpringSpigotTestInitializer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;

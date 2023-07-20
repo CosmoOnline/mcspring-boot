@@ -42,8 +42,8 @@ dependencies {
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
 }
 
-group = "dev.alangomes"
-version = "0.20.7"
+group = "kr.chuyong"
+version = "0.0.1"
 description = "Spring Boot Spigot Starter"
 java.sourceCompatibility = JavaVersion.VERSION_17
 

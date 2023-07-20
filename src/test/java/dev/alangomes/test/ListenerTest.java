@@ -1,8 +1,8 @@
 package dev.alangomes.test;
 
-import dev.alangomes.springspigot.context.Context;
-import dev.alangomes.springspigot.event.SpringEventExecutor;
-import dev.alangomes.springspigot.security.Audit;
+import kr.chuyong.springspigot.context.Context;
+import kr.chuyong.springspigot.event.SpringEventExecutor;
+import kr.chuyong.springspigot.security.Audit;
 import dev.alangomes.test.util.SpringSpigotTestInitializer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

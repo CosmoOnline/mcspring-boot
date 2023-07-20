@@ -1,9 +1,9 @@
 package dev.alangomes.test;
 
-import dev.alangomes.springspigot.context.Context;
-import dev.alangomes.springspigot.event.SpringEventExecutor;
-import dev.alangomes.springspigot.scope.SenderContextScope;
-import dev.alangomes.springspigot.scope.SenderScoped;
+import kr.chuyong.springspigot.context.Context;
+import kr.chuyong.springspigot.event.SpringEventExecutor;
+import kr.chuyong.springspigot.scope.SenderContextScope;
+import kr.chuyong.springspigot.scope.SenderScoped;
 import dev.alangomes.test.util.SpringSpigotTestInitializer;
 import lombok.Getter;
 import lombok.Setter;

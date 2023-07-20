@@ -2,7 +2,7 @@ package dev.alangomes.test;
 
 import dev.alangomes.springspigot.command.Subcommand;
 import dev.alangomes.springspigot.picocli.CommandLineDefinition;
-import dev.alangomes.springspigot.util.CommandUtils;
+import kr.chuyong.springspigot.util.CommandUtils;
 import dev.alangomes.test.util.SpringSpigotTestInitializer;
 import org.bukkit.Server;
 import org.bukkit.World;
