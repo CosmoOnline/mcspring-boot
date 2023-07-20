@@ -49,7 +49,7 @@ public final class SpringSpigotBootstrapper extends JavaPlugin {
     @SneakyThrows
     @Override
     public void onEnable() {
-        Bukkit.getScheduler().runTask(this, this::loadSpringSpigot);
+        loadSpringSpigot();
     }
 
     @SneakyThrows
