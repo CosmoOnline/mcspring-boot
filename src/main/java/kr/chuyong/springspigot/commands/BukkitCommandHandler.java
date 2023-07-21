@@ -20,41 +20,75 @@ public class BukkitCommandHandler {
 
     public static void registerCommands(Object cls) {
         try {
-            for (Method mt : ReflectionUtils.getAllDeclaredMethods(AopUtils.getTargetClass(cls))) {
+            Class<?> commandClazz = AopUtils.getTargetClass(cls);
+            BukkitCommandImpl impl = null;
+            if (commandClazz.isAnnotationPresent(CommandMapping.class)) {
+                CommandMapping at = commandClazz.getAnnotation(CommandMapping.class);
+                impl = registerParentCommand(at);
+            }
+            for (Method mt : ReflectionUtils.getAllDeclaredMethods(commandClazz)) {
                 CommandMapping at = mt.getAnnotation(CommandMapping.class);
                 if (at != null) {
-                    $registerCommands(at, mt, cls);
+                    if (impl == null) {
+                        //parent가 없을때
+                        impl = registerChildCommands(at.value(), new String[]{at.child()}, CommandConfig.fromAnnotation(at), mt, cls);
+                    } else {
+                        //class parent가 있을때
+                        impl = registerChildCommands(impl.getLabel(), new String[]{impl.baseConfig.args(), at.value(), at.child()}, CommandConfig.fromAnnotation(at), mt, cls);
+                    }
+
                 }
             }
+       //     System.out.println(impl.mainContainer.toString());
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    private static void $registerCommands(CommandMapping ano, Method mtd, Object cl) {
+    private static BukkitCommandImpl registerParentCommand(CommandMapping ano) {
+        if (ano.value().equals("") && ano.child().equals(""))
+            throw new RuntimeException("Cannot Register non-named class commands");
         try {
             final Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
             bukkitCommandMap.setAccessible(true);
             CommandMap commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
-            if (mainCMD.containsKey(ano.parent())) {
-                BukkitCommandImpl b = mainCMD.get(ano.parent());
-                b.addCommand(ano.child(), new SubCommandContainer(mtd, ano, cl, ano.subcommand()));
-                if (b.getAliases() == null || b.getAliases().size() < ano.aliases().length) {
-                    b.setAliases(Arrays.asList(ano.aliases()));
-                }
-                logger.info("&f&l[&6CosmoAPI Command Initializer&f&l] &a/" + ano.parent() + " " + ano.child() + " &f&lCommand Successfully Initialized");
-                return;
-            }
-            BukkitCommandImpl a = new BukkitCommandImpl(ano, mtd);
-            a.addCommand(ano.child(), new SubCommandContainer(mtd, ano, cl, ano.subcommand()));
-            commandMap.register(ano.parent(), a);
-            mainCMD.put(ano.parent(), a);
-            if (a.getAliases() == null || a.getAliases().size() < ano.aliases().length) {
+
+            BukkitCommandImpl a = new BukkitCommandImpl(ano.value(), SuperCommandConfig.fromAnnotation(ano));
+            commandMap.register(ano.value(), a);
+
+            mainCMD.put(ano.value(), a);
+            if (a.getAliases().size() < ano.aliases().length) {
                 a.setAliases(Arrays.asList(ano.aliases()));
             }
-            logger.info("&f&l[&6CosmoAPI Command Initializer&f&l] &a/" + ano.parent() + " " + ano.child() + " &f&lCommand Successfully Initialized");
+            return a;
+        } catch (Exception ex) {
+            throw new RuntimeException();
+        }
+    }
+
+    private static BukkitCommandImpl registerChildCommands(String parentKey, String[] childKey, CommandConfig ano, Method mtd, Object cl) {
+        try {
+            final Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+            bukkitCommandMap.setAccessible(true);
+            CommandMap commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
+            BukkitCommandImpl bukkitCommand = mainCMD.get(parentKey);
+            if (bukkitCommand == null) {
+                bukkitCommand = new BukkitCommandImpl(parentKey);
+                commandMap.register(parentKey, bukkitCommand);
+                mainCMD.put(parentKey, bukkitCommand);
+            }
+
+            SubCommandContainer container = bukkitCommand.addCommand(childKey, ano, mtd, cl);
+            Bukkit.getConsoleSender().sendMessage("§f§l[§6SpringSpigotr§f§l] §a/" + container.getFullKey() + " §f§lCommand Successfully Initialized");
+            return bukkitCommand;
+
+//            if (bukkitCommand.getAliases().size() < ano.aliases().length) {
+//                bukkitCommand.setAliases(Arrays.asList(ano.aliases()));
+//            }
+
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException();
         }
     }
 }

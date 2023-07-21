@@ -1,5 +1,6 @@
 package kr.chuyong.springspigot;
 
+import kr.chuyong.springspigot.annotation.CommandController;
 import kr.chuyong.springspigot.annotation.CommandMapping;
 import kr.chuyong.springspigot.commands.BukkitCommandHandler;
 import kr.chuyong.springspigot.util.CompoundClassLoader;

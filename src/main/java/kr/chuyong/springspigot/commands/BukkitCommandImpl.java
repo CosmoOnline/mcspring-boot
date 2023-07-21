@@ -1,80 +1,84 @@
 package kr.chuyong.springspigot.commands;
 
-import kr.chuyong.springspigot.annotation.CommandMapping;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 public class BukkitCommandImpl extends BukkitCommand {
-    private final HashMap<String, SubCommandContainer> map = new HashMap<String, SubCommandContainer>();
-    private SubCommandContainer con = null;
+    final SubCommandContainer mainContainer = new SubCommandContainer(null, this.getLabel(), 0);
+    SuperCommandConfig baseConfig;
 
-    public BukkitCommandImpl(CommandMapping ano, Method method) {
-        super(ano.parent());
+    public SuperCommandConfig getBaseConfig() {
+        return baseConfig;
+    }
+
+    public BukkitCommandImpl(String baseLabel) {
+        super(baseLabel);
         this.description = "";
         this.usageMessage = "";
         this.setPermission("");
         this.setAliases(new ArrayList<>());
     }
 
-    public void addCommand(String subcommand, SubCommandContainer sc) {
-        if (!subcommand.equals(""))
-            map.put(subcommand, sc);
-        else
-            con = sc;
+    public SubCommandContainer getContainer(String[] args) {
+        return mainContainer.getContainer(new LinkedList<>(Arrays.asList(args)));
     }
 
-    private SubCommandContainer getSubCommand(String subcommand) {
-        return map.get(subcommand);
+    public BukkitCommandImpl(String baseLabel, SuperCommandConfig baseConfig) {
+        this(baseLabel);
+        this.baseConfig = baseConfig;
+    }
+
+    public SubCommandContainer addCommand(String[] subcommand, CommandConfig ano, Method mtd, Object cl) {
+        LinkedList<String> commandList = new LinkedList<>(Arrays.asList(subcommand));
+        commandList.removeIf(element -> element.equals(""));
+        return mainContainer.addCommand(commandList, ano, mtd, cl);
     }
 
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (args.length == 0) {
-            if (con != null) {
-                if (checkPermValid(sender, con)) {
-                    executeMethod(con, sender, args);
-                }
-            }
-            return true;
-        }
-        SubCommandContainer sc = getSubCommand(args[0]);
-        if (sc == null) {
-            if (con != null) {
-                if (checkPermValid(sender, con)) {
-                    executeMethod(con, sender, args);
-                }
-            }
+        SubCommandContainer sc = getContainer(args);
+        String[] copiedArray = new String[args.length - sc.getCommandDepth()];
+        System.arraycopy(args, sc.getCommandDepth(), copiedArray, 0, copiedArray.length);
+
+        if(!sc.isImplemented()) {
+            System.out.println("UNKNOWN COMMAND");
             return false;
-        }
-        if (!(args.length >= sc.getAnnotation().minArgs() && args.length <= sc.getAnnotation().maxArgs())) {
-            sender.sendMessage(sc.getAnnotation().prefix() + sc.getAnnotation().usage());
-            return false;
-        }
-        if (checkPermValid(sender, sc)) {
-            executeMethod(sc, sender, args);
         }
 
+        CommandConfig config = sc.getConfig();
+        if (!(copiedArray.length >= config.minArgs() && copiedArray.length <= config.maxArgs())) {
+            sender.sendMessage(getPrefix(config) + config.usage());
+            return false;
+        }
+        if (checkPermValid(sender, sc.getConfig())) {
+            executeMethod(sc, sender, copiedArray);
+        }
         return false;
     }
 
-    private boolean checkPermValid(CommandSender sender, SubCommandContainer sc) {
-        if (sc.getAnnotation().op() && !sender.isOp()) {
-            sender.sendMessage(sc.getAnnotation().prefix() + sc.getAnnotation().noPerm());
+    @Override
+    public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
+        SubCommandContainer sc = getContainer(args);
+        Collection<String> keys = sc.childCommandKeys();
+        return keys.stream().toList();
+    }
+
+    private boolean checkPermValid(CommandSender sender, CommandConfig commandConfig) {
+        if (opCondition(commandConfig) && !sender.isOp()) {
+            sender.sendMessage(getPrefix(commandConfig) + commandConfig.noPermMessage());
             return false;
         }
-        if (!sc.getAnnotation().console() && (!(sender instanceof Player))) {
-            sender.sendMessage(sc.getAnnotation().prefix() + sc.getAnnotation().noConsole());
+        if (!consoleCondition(commandConfig) && (!(sender instanceof Player))) {
+            sender.sendMessage(getPrefix(commandConfig) + commandConfig.noConsoleMessage());
             return false;
         }
-        if (!sc.getAnnotation().perm().equals("") && !sender.hasPermission(sc.getAnnotation().perm())) {
-            sender.sendMessage(sc.getAnnotation().prefix() + sc.getAnnotation().noPerm());
+        if (!commandConfig.perm().equals("") && !sender.hasPermission(commandConfig.perm())) {
+            sender.sendMessage(getPrefix(commandConfig) + commandConfig.noPermMessage());
             return false;
         }
         return true;
@@ -87,7 +91,6 @@ public class BukkitCommandImpl extends BukkitCommand {
         final UUID uk = uuid;
         Object[] target = paramBuilder(sc.getMethod(), getParamContainer(sender, args, this.getName()), uuid);
         ReflectionUtils.invokeMethod(sc.getMethod(), sc.getPathClass(), target);
-        // sc.getMethod().invoke(sc.getPathClass(), target);
     }
 
     private HashMap<Class<?>, Object> getParamContainer(CommandSender sender, String[] args, String label) {
@@ -113,5 +116,28 @@ public class BukkitCommandImpl extends BukkitCommand {
         }
         paramContainer.clear();
         return arr;
+    }
+
+    public String getPrefix(CommandConfig config) {
+        return baseConfig != null && !baseConfig.prefix().equals("") ? baseConfig.prefix() : config.prefix();
+    }
+
+    public Boolean opCondition(CommandConfig config) {
+        return baseConfig != null && !baseConfig.op() || config.op();
+    }
+
+    public boolean consoleCondition(CommandConfig config) {
+        return baseConfig != null && !baseConfig.console() || config.console();
+    }
+
+    public String joinArrayToString(String[] array) {
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < array.length; i++){
+            sb.append(array[i]);
+            if(i != array.length - 1)
+                sb.append(" ");
+            else sb.append("<EOF>");
+        }
+        return sb.toString();
     }
 }

@@ -1,4 +1,4 @@
-package kr.chuyong.springspigot;
+package kr.chuyong.springspigot.annotation;
 
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
