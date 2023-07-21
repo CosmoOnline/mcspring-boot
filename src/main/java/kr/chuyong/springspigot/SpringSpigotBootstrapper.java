@@ -63,9 +63,6 @@ public final class SpringSpigotBootstrapper extends JavaPlugin {
     @Override
     public void onEnable() {
         loadSpringSpigot();
-
-        NettyModule module = context.getBean("hq-provider", ExternalDependencyProvider.class).get(NettyModule.class);
-        System.out.println(module);
     }
 
     @SneakyThrows
