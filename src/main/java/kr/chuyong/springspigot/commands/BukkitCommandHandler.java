@@ -14,9 +14,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public class BukkitCommandHandler {
-    protected static HashMap<Class<?>, Object> globalInstanceMap = new HashMap<>();
     private static final Logger logger = LoggerFactory.getLogger(BukkitCommandHandler.class);
     private static final HashMap<String, BukkitCommandImpl> mainCMD = new HashMap<>();
+    protected static HashMap<Class<?>, Object> globalInstanceMap = new HashMap<>();
 
     public static void registerCommands(Object cls) {
         try {
@@ -47,7 +47,7 @@ public class BukkitCommandHandler {
     private static BukkitCommandImpl registerParentCommand(CommandMapping ano) {
         if (ano.value().equals("") && ano.child().equals(""))
             throw new RuntimeException("Cannot Register non-named class commands");
-        if(mainCMD.containsKey(ano.value())) return mainCMD.get(ano.value());
+        if (mainCMD.containsKey(ano.value())) return mainCMD.get(ano.value());
         try {
             final Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
             bukkitCommandMap.setAccessible(true);

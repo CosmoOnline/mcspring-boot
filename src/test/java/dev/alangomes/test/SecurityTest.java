@@ -1,10 +1,10 @@
 package dev.alangomes.test;
 
+import dev.alangomes.test.util.SpringSpigotTestInitializer;
 import kr.chuyong.springspigot.context.Context;
 import kr.chuyong.springspigot.context.SessionService;
 import kr.chuyong.springspigot.exception.PermissionDeniedException;
 import kr.chuyong.springspigot.exception.PlayerNotFoundException;
-import dev.alangomes.test.util.SpringSpigotTestInitializer;
 import kr.chuyong.springspigot.security.*;
 import org.bukkit.Server;
 import org.bukkit.command.ConsoleCommandSender;

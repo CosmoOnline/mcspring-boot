@@ -1,10 +1,10 @@
 package dev.alangomes.test;
 
-import kr.chuyong.springspigot.context.Context;
-import kr.chuyong.springspigot.reactive.ObserveEvent;
 import dev.alangomes.test.util.SpringSpigotTestInitializer;
 import io.reactivex.Observable;
 import io.reactivex.observers.TestObserver;
+import kr.chuyong.springspigot.context.Context;
+import kr.chuyong.springspigot.reactive.ObserveEvent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.Server;

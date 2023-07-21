@@ -3,13 +3,14 @@ package kr.chuyong.springspigot;
 import kr.chuyong.springspigot.annotation.CommandController;
 import kr.chuyong.springspigot.annotation.CommandMapping;
 import kr.chuyong.springspigot.commands.BukkitCommandHandler;
+import kr.chuyong.springspigot.external.ExternalDependencyProvider;
 import kr.chuyong.springspigot.util.CompoundClassLoader;
 import kr.chuyong.springspigot.util.YamlPropertiesFactory;
+import kr.hqservice.framework.bukkit.core.netty.NettyModule;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
@@ -31,9 +32,9 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 public final class SpringSpigotBootstrapper extends JavaPlugin {
-    private Logger logger = LoggerFactory.getLogger(SpringSpigotBootstrapper.class);
-    private ConfigurableApplicationContext context;
     public static ClassLoader classLoader = null;
+    private final Logger logger = LoggerFactory.getLogger(SpringSpigotBootstrapper.class);
+    private ConfigurableApplicationContext context;
 
     public SpringSpigotBootstrapper() {
         val parentClassLoader = Thread.currentThread().getContextClassLoader();
@@ -43,10 +44,28 @@ public final class SpringSpigotBootstrapper extends JavaPlugin {
         classLoader = compoundLoader;
     }
 
+    public static ClassLoader getClassLoader(ClassLoader parent, URL url) {
+        try {
+            //  Method method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+//            if (!method.isAccessible()) {
+//                method.setAccessible(true);
+//            }
+            URLClassLoader classLoader = new URLClassLoader(new URL[]{url}, parent);
+            //  method.invoke(classLoader, url);
+            return classLoader;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     @SneakyThrows
     @Override
     public void onEnable() {
         loadSpringSpigot();
+
+        NettyModule module = context.getBean("hq-provider", ExternalDependencyProvider.class).get(NettyModule.class);
+        System.out.println(module);
     }
 
     @SneakyThrows
@@ -63,7 +82,6 @@ public final class SpringSpigotBootstrapper extends JavaPlugin {
                 .toList();
 
 
-
         CompoundClassLoader combinedLoader = new CompoundClassLoader(classLoaders);
         Thread.currentThread().setContextClassLoader(combinedLoader);
 
@@ -75,11 +93,11 @@ public final class SpringSpigotBootstrapper extends JavaPlugin {
         pluginClasses.forEach(plugin -> {
             try {
                 File file = (File) f.get(plugin.getClass().getClassLoader());
-                logger.info("Disabling plugin " + plugin.getName() +" To load from SpringSpigot..");
+                logger.info("Disabling plugin " + plugin.getName() + " To load from SpringSpigot..");
                 Bukkit.getPluginManager().disablePlugin(plugin);
 
                 ClassLoader newLoader = getClassLoader(getClassLoader(), file.toURI().toURL());
-                classLoaders.add( newLoader);
+                classLoaders.add(newLoader);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -103,10 +121,10 @@ public final class SpringSpigotBootstrapper extends JavaPlugin {
         CompoundClassLoader finalCombinedLoader1 = combinedLoader;
         pluginClasses.forEach(pluginzz -> {
             val targetClazz = AopUtils.getTargetClass(pluginzz);
-            try{
+            try {
                 val dynamicClazz = Class.forName(targetClazz.getName(), true, finalCombinedLoader1);
                 ctx.scan(dynamicClazz.getPackageName());
-            }catch( Exception ex ) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         });
@@ -136,21 +154,6 @@ public final class SpringSpigotBootstrapper extends JavaPlugin {
                 .filter(method ->
                         method.isAnnotationPresent(CommandMapping.class)
                 );
-    }
-
-    public static ClassLoader getClassLoader(ClassLoader parent, URL url) {
-        try {
-          //  Method method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-//            if (!method.isAccessible()) {
-//                method.setAccessible(true);
-//            }
-            URLClassLoader classLoader = new URLClassLoader(new URL[]{url}, parent);
-          //  method.invoke(classLoader, url);
-            return classLoader;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
 

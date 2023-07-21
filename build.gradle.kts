@@ -11,6 +11,7 @@ plugins {
 repositories {
     mavenLocal()
     mavenCentral()
+    maven("https://maven.hqservice.kr/repository/maven-public/")
 
     maven {
         url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
@@ -27,9 +28,14 @@ repositories {
 
 dependencies {
     api("org.springframework.boot:spring-boot-starter:3.1.1")
+    // https://mvnrepository.com/artifact/io.insert-koin/koin-core
+    compileOnly("io.insert-koin:koin-core:3.4.2")
+
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa
     api("org.springframework.boot:spring-boot-starter-data-jpa:3.1.1")
     api("mysql:mysql-connector-java:8.0.25")
+    compileOnly("kr.hqservice:hqframework-global-core:1.0.0-SNAPSHOT")
+    compileOnly("kr.hqservice:hqframework-bukkit-core:1.0.0-SNAPSHOT")
     implementation("org.springframework.boot:spring-boot-starter-aop:3.1.1")
     implementation("info.picocli:picocli:4.7.3")
     implementation("org.apache.commons:commons-lang3:3.12.0")

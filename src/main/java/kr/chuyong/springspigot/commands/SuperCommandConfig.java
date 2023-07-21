@@ -12,7 +12,7 @@ public record SuperCommandConfig(
         String noConsoleMessage,
         boolean op,
         boolean console
-){
+) {
     public static SuperCommandConfig fromAnnotation(CommandMapping mapping) {
         return new SuperCommandConfig(
                 mapping.child(),

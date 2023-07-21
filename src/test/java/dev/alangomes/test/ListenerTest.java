@@ -1,16 +1,15 @@
 package dev.alangomes.test;
 
+import dev.alangomes.test.util.SpringSpigotTestInitializer;
 import kr.chuyong.springspigot.context.Context;
 import kr.chuyong.springspigot.event.SpringEventExecutor;
 import kr.chuyong.springspigot.security.Audit;
-import dev.alangomes.test.util.SpringSpigotTestInitializer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.*;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;

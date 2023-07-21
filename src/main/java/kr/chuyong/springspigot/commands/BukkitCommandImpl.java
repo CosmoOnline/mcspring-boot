@@ -12,10 +12,6 @@ public class BukkitCommandImpl extends BukkitCommand {
     final SubCommandContainer mainContainer = new SubCommandContainer(null, this.getLabel(), 0);
     SuperCommandConfig baseConfig;
 
-    public SuperCommandConfig getBaseConfig() {
-        return baseConfig;
-    }
-
     public BukkitCommandImpl(String baseLabel) {
         super(baseLabel);
         this.description = "";
@@ -24,13 +20,17 @@ public class BukkitCommandImpl extends BukkitCommand {
         this.setAliases(new ArrayList<>());
     }
 
-    public SubCommandContainer getContainer(String[] args) {
-        return mainContainer.getContainer(new LinkedList<>(Arrays.asList(args)));
-    }
-
     public BukkitCommandImpl(String baseLabel, SuperCommandConfig baseConfig) {
         this(baseLabel);
         this.baseConfig = baseConfig;
+    }
+
+    public SuperCommandConfig getBaseConfig() {
+        return baseConfig;
+    }
+
+    public SubCommandContainer getContainer(String[] args) {
+        return mainContainer.getContainer(new LinkedList<>(Arrays.asList(args)));
     }
 
     public SubCommandContainer addCommand(String[] subcommand, CommandConfig ano, Method mtd, Object cl) {
@@ -42,8 +42,8 @@ public class BukkitCommandImpl extends BukkitCommand {
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         SubCommandContainer sc = getContainer(args);
-        if(sc == null || !sc.isImplemented()) {
-           // System.out.println("UNKNOWN COMMAND");
+        if (sc == null || !sc.isImplemented()) {
+            // System.out.println("UNKNOWN COMMAND");
             return false;
         }
 
@@ -64,7 +64,7 @@ public class BukkitCommandImpl extends BukkitCommand {
     @Override
     public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
         SubCommandContainer sc = getContainer(args);
-        if(sc == null) return super.tabComplete(sender, alias, args);
+        if (sc == null) return super.tabComplete(sender, alias, args);
         Collection<String> keys = sc.childCommandKeys();
         return keys.stream().toList();
     }
@@ -131,7 +131,11 @@ public class BukkitCommandImpl extends BukkitCommand {
         return baseConfig != null && !baseConfig.console() || config.console();
     }
 
-    private String noPermMessage(CommandConfig config) { return baseConfig != null && !baseConfig.noPermMessage().equals("") ? baseConfig.noPermMessage() : config.noPermMessage(); }
+    private String noPermMessage(CommandConfig config) {
+        return baseConfig != null && !baseConfig.noPermMessage().equals("") ? baseConfig.noPermMessage() : config.noPermMessage();
+    }
 
-    private String noConsoleMessage(CommandConfig config) { return baseConfig != null && !baseConfig.noConsoleMessage().equals("") ? baseConfig.noConsoleMessage() : config.noConsoleMessage(); }
+    private String noConsoleMessage(CommandConfig config) {
+        return baseConfig != null && !baseConfig.noConsoleMessage().equals("") ? baseConfig.noConsoleMessage() : config.noConsoleMessage();
+    }
 }

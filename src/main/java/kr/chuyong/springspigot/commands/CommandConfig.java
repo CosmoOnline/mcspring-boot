@@ -13,7 +13,7 @@ public record CommandConfig(
         int maxArgs,
         boolean op,
         boolean console
-){
+) {
     public static CommandConfig fromAnnotation(CommandMapping mapping) {
         return new CommandConfig(
                 mapping.usage(),

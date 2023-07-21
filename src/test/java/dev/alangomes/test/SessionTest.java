@@ -1,10 +1,10 @@
 package dev.alangomes.test;
 
+import dev.alangomes.test.util.SpringSpigotTestInitializer;
 import kr.chuyong.springspigot.context.Context;
 import kr.chuyong.springspigot.context.DefaultSessionService;
 import kr.chuyong.springspigot.context.SessionService;
 import kr.chuyong.springspigot.event.SpringEventExecutor;
-import dev.alangomes.test.util.SpringSpigotTestInitializer;
 import lombok.SneakyThrows;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;

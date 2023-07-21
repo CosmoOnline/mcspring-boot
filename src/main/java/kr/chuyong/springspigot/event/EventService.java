@@ -34,7 +34,7 @@ public class EventService {
     private void registerEvents(Listener listener, Method method) {
         val handler = method.getAnnotation(EventHandler.class);
         val eventType = (Class<? extends Event>) method.getParameters()[0].getType();
-       // System.out.println("====================== " + method.getName() + " === " + listener.getClass().getName() + " === " + eventType.getName());
+        // System.out.println("====================== " + method.getName() + " === " + listener.getClass().getName() + " === " + eventType.getName());
         server.getPluginManager().registerEvent(eventType, listener, handler.priority(), eventExecutor.create(method), plugin, handler.ignoreCancelled());
     }
 

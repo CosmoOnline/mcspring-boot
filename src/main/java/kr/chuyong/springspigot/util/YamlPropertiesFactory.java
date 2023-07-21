@@ -13,13 +13,6 @@ import java.util.Properties;
 
 public class YamlPropertiesFactory implements PropertySourceFactory {
 
-    @Override
-    public PropertySource<?> createPropertySource(String name, EncodedResource resource) throws IOException {
-        Properties propertiesFromYaml = loadYamlIntoProperties(resource.getResource());
-        String sourceName = name != null ? name : resource.getResource().getFilename();
-        return (PropertySource<?>) new PropertiesPropertySource(sourceName, propertiesFromYaml);
-    }
-
     public static Properties loadYamlIntoProperties(Resource resource) throws FileNotFoundException {
         try {
             YamlPropertiesFactoryBean factory = new YamlPropertiesFactoryBean();
@@ -33,5 +26,12 @@ public class YamlPropertiesFactory implements PropertySourceFactory {
                 throw (FileNotFoundException) e.getCause();
             throw e;
         }
+    }
+
+    @Override
+    public PropertySource<?> createPropertySource(String name, EncodedResource resource) throws IOException {
+        Properties propertiesFromYaml = loadYamlIntoProperties(resource.getResource());
+        String sourceName = name != null ? name : resource.getResource().getFilename();
+        return new PropertiesPropertySource(sourceName, propertiesFromYaml);
     }
 }

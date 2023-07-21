@@ -1,8 +1,8 @@
 package kr.chuyong.springspigot.extensions.vault;
 
+import jakarta.annotation.PostConstruct;
 import kr.chuyong.springspigot.extensions.EconomyException;
 import kr.chuyong.springspigot.extensions.EconomyService;
-import jakarta.annotation.PostConstruct;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.OfflinePlayer;

@@ -1,7 +1,7 @@
 package kr.chuyong.springspigot.command;
 
-import kr.chuyong.springspigot.configuration.Instance;
 import dev.alangomes.springspigot.picocli.CommandLineDefinition;
+import kr.chuyong.springspigot.configuration.Instance;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandException;
 import org.junit.Before;

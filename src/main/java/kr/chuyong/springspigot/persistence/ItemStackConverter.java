@@ -13,10 +13,10 @@ import java.io.ByteArrayOutputStream;
 public class ItemStackConverter implements AttributeConverter<ItemStack, byte[]> {
     @Override
     public byte[] convertToDatabaseColumn(ItemStack attribute) {
-        try(ByteArrayOutputStream baos = new ByteArrayOutputStream(); BukkitObjectOutputStream buos = new BukkitObjectOutputStream(baos)) {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream(); BukkitObjectOutputStream buos = new BukkitObjectOutputStream(baos)) {
             buos.writeObject(attribute);
             return baos.toByteArray();
-        }catch(Exception ex) {
+        } catch (Exception ex) {
             throw new RuntimeException();
         }
     }

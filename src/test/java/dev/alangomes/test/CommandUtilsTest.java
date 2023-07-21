@@ -2,8 +2,8 @@ package dev.alangomes.test;
 
 import dev.alangomes.springspigot.command.Subcommand;
 import dev.alangomes.springspigot.picocli.CommandLineDefinition;
-import kr.chuyong.springspigot.util.CommandUtils;
 import dev.alangomes.test.util.SpringSpigotTestInitializer;
+import kr.chuyong.springspigot.util.CommandUtils;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
