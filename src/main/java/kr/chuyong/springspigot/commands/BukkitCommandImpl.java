@@ -43,7 +43,7 @@ public class BukkitCommandImpl extends BukkitCommand {
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         SubCommandContainer sc = getContainer(args);
         if(sc == null || !sc.isImplemented()) {
-            System.out.println("UNKNOWN COMMAND");
+           // System.out.println("UNKNOWN COMMAND");
             return false;
         }
 

@@ -80,7 +80,7 @@ public class BukkitCommandHandler {
             }
 
             SubCommandContainer container = bukkitCommand.addCommand(childKey, ano, mtd, cl);
-            Bukkit.getConsoleSender().sendMessage("§f§l[§6SpringSpigotr§f§l] §a/" + container.getFullKey() + " §f§lCommand Successfully Initialized");
+            Bukkit.getConsoleSender().sendMessage("§f§l[§6SpringSpigot§f§l] §a/" + container.getFullKey() + " §f§lCommand Successfully Initialized");
             return bukkitCommand;
 
 //            if (bukkitCommand.getAliases().size() < ano.aliases().length) {

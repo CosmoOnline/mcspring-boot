@@ -38,7 +38,8 @@ public class SubCommandContainer {
                 return nextCommand.getContainer(remainingArgs);
             } else {
                 //남은 args가 있는데, 더이상 뎁스가 없음 -> 추가 args인지 판별!
-                int remainingItems = remainingArgs.size();
+                int remainingItems = remainingArgs.size() + 1;
+                //System.out.println("Remain : " + remainingItems + " wrapper " + invokeWrapper);
                 if(invokeWrapper == null) return null;
                 if(invokeWrapper.config().minArgs() >= remainingItems && invokeWrapper.config().maxArgs() <= remainingItems) {
                     return this;

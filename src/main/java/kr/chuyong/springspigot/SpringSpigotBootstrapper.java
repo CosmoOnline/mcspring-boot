@@ -19,6 +19,7 @@ import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StopWatch;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -50,6 +51,9 @@ public final class SpringSpigotBootstrapper extends JavaPlugin {
 
     @SneakyThrows
     public void loadSpringSpigot() {
+        StopWatch watch = new StopWatch();
+        watch.start();
+        Bukkit.getConsoleSender().sendMessage("§f§l[§6SpringSpigot§f§l] §f§lSpringSpigot Initialization Progress Initiated...");
         val classLoaders = new ArrayList<ClassLoader>();
         classLoaders.add(Thread.currentThread().getContextClassLoader());
         classLoaders.add(getClassLoader());
@@ -113,6 +117,9 @@ public final class SpringSpigotBootstrapper extends JavaPlugin {
         commandControllers.forEach((t, ob) -> {
             BukkitCommandHandler.registerCommands(ob);
         });
+
+        watch.stop();
+        Bukkit.getConsoleSender().sendMessage("§f§l[§6SpringSpigot§f§l] §f§lSpringSpigot Initialization Progress Finished. Elapsed Time: " + watch.getTotalTimeMillis() + "ms");
     }
 
     @Override
