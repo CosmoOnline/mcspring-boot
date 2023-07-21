@@ -21,25 +21,24 @@ public class BukkitCommandHandler {
     public static void registerCommands(Object cls) {
         try {
             Class<?> commandClazz = AopUtils.getTargetClass(cls);
-            BukkitCommandImpl impl = null;
+            CommandMapping baseConfig = null;
             if (commandClazz.isAnnotationPresent(CommandMapping.class)) {
-                CommandMapping at = commandClazz.getAnnotation(CommandMapping.class);
-                impl = registerParentCommand(at);
+                baseConfig = commandClazz.getAnnotation(CommandMapping.class);
+                registerParentCommand(baseConfig);
             }
             for (Method mt : ReflectionUtils.getAllDeclaredMethods(commandClazz)) {
                 CommandMapping at = mt.getAnnotation(CommandMapping.class);
                 if (at != null) {
-                    if (impl == null) {
+                    if (baseConfig == null) {
                         //parent가 없을때
-                        impl = registerChildCommands(at.value(), new String[]{at.child()}, CommandConfig.fromAnnotation(at), mt, cls);
+                        registerChildCommands(at.value(), new String[]{at.child()}, CommandConfig.fromAnnotation(at), mt, cls);
                     } else {
                         //class parent가 있을때
-                        impl = registerChildCommands(impl.getLabel(), new String[]{impl.baseConfig.args(), at.value(), at.child()}, CommandConfig.fromAnnotation(at), mt, cls);
+                        registerChildCommands(baseConfig.value(), new String[]{baseConfig.child(), at.value(), at.child()}, CommandConfig.fromAnnotation(at), mt, cls);
                     }
 
                 }
             }
-       //     System.out.println(impl.mainContainer.toString());
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -48,6 +47,7 @@ public class BukkitCommandHandler {
     private static BukkitCommandImpl registerParentCommand(CommandMapping ano) {
         if (ano.value().equals("") && ano.child().equals(""))
             throw new RuntimeException("Cannot Register non-named class commands");
+        if(mainCMD.containsKey(ano.value())) return mainCMD.get(ano.value());
         try {
             final Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
             bukkitCommandMap.setAccessible(true);
@@ -67,6 +67,7 @@ public class BukkitCommandHandler {
     }
 
     private static BukkitCommandImpl registerChildCommands(String parentKey, String[] childKey, CommandConfig ano, Method mtd, Object cl) {
+        System.out.println("Register parent: " + parentKey + " child: " + Arrays.toString(childKey));
         try {
             final Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
             bukkitCommandMap.setAccessible(true);

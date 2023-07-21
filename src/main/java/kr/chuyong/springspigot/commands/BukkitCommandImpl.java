@@ -42,13 +42,13 @@ public class BukkitCommandImpl extends BukkitCommand {
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         SubCommandContainer sc = getContainer(args);
-        String[] copiedArray = new String[args.length - sc.getCommandDepth()];
-        System.arraycopy(args, sc.getCommandDepth(), copiedArray, 0, copiedArray.length);
-
-        if(!sc.isImplemented()) {
+        if(sc == null || !sc.isImplemented()) {
             System.out.println("UNKNOWN COMMAND");
             return false;
         }
+
+        String[] copiedArray = new String[args.length - sc.getCommandDepth()];
+        System.arraycopy(args, sc.getCommandDepth(), copiedArray, 0, copiedArray.length);
 
         CommandConfig config = sc.getConfig();
         if (!(copiedArray.length >= config.minArgs() && copiedArray.length <= config.maxArgs())) {
@@ -64,21 +64,22 @@ public class BukkitCommandImpl extends BukkitCommand {
     @Override
     public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
         SubCommandContainer sc = getContainer(args);
+        if(sc == null) return super.tabComplete(sender, alias, args);
         Collection<String> keys = sc.childCommandKeys();
         return keys.stream().toList();
     }
 
     private boolean checkPermValid(CommandSender sender, CommandConfig commandConfig) {
         if (opCondition(commandConfig) && !sender.isOp()) {
-            sender.sendMessage(getPrefix(commandConfig) + commandConfig.noPermMessage());
+            sender.sendMessage(getPrefix(commandConfig) + noPermMessage(commandConfig));
             return false;
         }
         if (!consoleCondition(commandConfig) && (!(sender instanceof Player))) {
-            sender.sendMessage(getPrefix(commandConfig) + commandConfig.noConsoleMessage());
+            sender.sendMessage(getPrefix(commandConfig) + noConsoleMessage(commandConfig));
             return false;
         }
         if (!commandConfig.perm().equals("") && !sender.hasPermission(commandConfig.perm())) {
-            sender.sendMessage(getPrefix(commandConfig) + commandConfig.noPermMessage());
+            sender.sendMessage(getPrefix(commandConfig) + noPermMessage(commandConfig));
             return false;
         }
         return true;
@@ -118,26 +119,19 @@ public class BukkitCommandImpl extends BukkitCommand {
         return arr;
     }
 
-    public String getPrefix(CommandConfig config) {
+    private String getPrefix(CommandConfig config) {
         return baseConfig != null && !baseConfig.prefix().equals("") ? baseConfig.prefix() : config.prefix();
     }
 
-    public Boolean opCondition(CommandConfig config) {
+    private Boolean opCondition(CommandConfig config) {
         return baseConfig != null && !baseConfig.op() || config.op();
     }
 
-    public boolean consoleCondition(CommandConfig config) {
+    private boolean consoleCondition(CommandConfig config) {
         return baseConfig != null && !baseConfig.console() || config.console();
     }
 
-    public String joinArrayToString(String[] array) {
-        StringBuilder sb = new StringBuilder();
-        for(int i = 0; i < array.length; i++){
-            sb.append(array[i]);
-            if(i != array.length - 1)
-                sb.append(" ");
-            else sb.append("<EOF>");
-        }
-        return sb.toString();
-    }
+    private String noPermMessage(CommandConfig config) { return baseConfig != null && !baseConfig.noPermMessage().equals("") ? baseConfig.noPermMessage() : config.noPermMessage(); }
+
+    private String noConsoleMessage(CommandConfig config) { return baseConfig != null && !baseConfig.noConsoleMessage().equals("") ? baseConfig.noConsoleMessage() : config.noConsoleMessage(); }
 }

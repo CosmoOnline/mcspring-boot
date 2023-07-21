@@ -37,7 +37,14 @@ public class SubCommandContainer {
             if(nextCommand != null) {
                 return nextCommand.getContainer(remainingArgs);
             } else {
-                return this;
+                //남은 args가 있는데, 더이상 뎁스가 없음 -> 추가 args인지 판별!
+                int remainingItems = remainingArgs.size();
+                if(invokeWrapper == null) return null;
+                if(invokeWrapper.config().minArgs() >= remainingItems && invokeWrapper.config().maxArgs() <= remainingItems) {
+                    return this;
+                } else {
+                    return null;
+                }
             }
         }
     }
@@ -47,6 +54,9 @@ public class SubCommandContainer {
         System.out.println("ADDCOMMAND " +currentKey +  " arr():" +  args.toString());
         if(args.isEmpty()) {
             System.out.println("BINDED " + currentKey +" on depth " + commandDepth);
+            if(invokeWrapper != null) {
+                throw new RuntimeException("Duplicated command entry! Command: /" + getFullKey());
+            }
             invokeWrapper = new InvokeWrapper(mtd, cl, ano);
             return this;
         } else{
