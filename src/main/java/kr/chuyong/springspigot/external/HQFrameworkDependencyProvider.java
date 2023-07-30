@@ -23,21 +23,23 @@ public class HQFrameworkDependencyProvider implements ExternalDependencyProvider
 
     @Override
     public <T> T get(Class<T> clazz) {
-        HQBukkitPlugin pluginzz = (HQBukkitPlugin) Bukkit.getPluginManager().getPlugin("HQFramework");
-        try {
-            Method m = HQBukkitPlugin.class.getDeclaredMethod("getComponentRegistry");
-            m.setAccessible(true);
-            ComponentRegistry registry = (ComponentRegistry) m.invoke(pluginzz);
-            KClass<? extends HQComponent> kotlinClazz = (KClass<? extends HQComponent>) kotlin.jvm.JvmClassMappingKt.getKotlinClass(clazz);
-            return (T) registry.getComponent(kotlinClazz);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new RuntimeException();
-        }
+        return getNamed(clazz, "HQFramework");
     }
 
     @Override
     public <T> T getNamed(Class<T> clazz, String qualifier) {
-        return get(clazz);
+        return (T) getRegistryFromPlugin(qualifier).getComponent((KClass<? extends HQComponent>) kotlin.jvm.JvmClassMappingKt.getKotlinClass(clazz));
+    }
+
+    private ComponentRegistry getRegistryFromPlugin(String pluginName) {
+        HQBukkitPlugin pluginzz = (HQBukkitPlugin) Bukkit.getPluginManager().getPlugin(pluginName);
+        try {
+            Method m = HQBukkitPlugin.class.getDeclaredMethod("getComponentRegistry");
+            m.setAccessible(true);
+            return (ComponentRegistry) m.invoke(pluginzz);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new RuntimeException();
+        }
     }
 }
