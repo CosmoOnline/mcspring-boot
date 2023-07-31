@@ -1,22 +1,29 @@
 package kr.chuyong.springspigot.util.scheduler;
 
 import kr.chuyong.springspigot.context.Context;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.util.concurrent.ListenableFuture;
 
-import java.util.Date;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.concurrent.ScheduledFuture;
 
-@AllArgsConstructor
-public class SpigotScheduler extends ThreadPoolTaskScheduler {
+public class SpigotScheduler implements TaskScheduler {
+    private ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
 
     private final SchedulerService scheduler;
 
     private final Context context;
+
+    public SpigotScheduler(SchedulerService scheduler, Context context) {
+        this.scheduler = scheduler;
+        this.context = context;
+
+        taskScheduler.setPoolSize(1);
+        taskScheduler.initialize();
+    }
 
     private Runnable wrapSync(Runnable task) {
         return new WrappedRunnable(scheduler, task);
@@ -24,57 +31,31 @@ public class SpigotScheduler extends ThreadPoolTaskScheduler {
 
     @Override
     public ScheduledFuture<?> schedule(Runnable task, Trigger trigger) {
-        return super.schedule(wrapSync(task), trigger);
+        return taskScheduler.schedule(wrapSync(task), trigger);
     }
 
     @Override
-    public ScheduledFuture<?> schedule(Runnable task, Date startTime) {
-        return super.schedule(wrapSync(task), startTime);
+    public ScheduledFuture<?> schedule(Runnable task, Instant startTime) {
+        return taskScheduler.schedule(wrapSync(task), startTime);
     }
 
     @Override
-    public ScheduledFuture<?> scheduleAtFixedRate(Runnable task, Date startTime, long period) {
-        return super.scheduleAtFixedRate(wrapSync(task), startTime, period);
+    public ScheduledFuture<?> scheduleAtFixedRate(Runnable task, Instant startTime, Duration period) {
+        return taskScheduler.scheduleAtFixedRate(wrapSync(task), startTime, period);
     }
 
     @Override
-    public ScheduledFuture<?> scheduleAtFixedRate(Runnable task, long period) {
-        return super.scheduleAtFixedRate(wrapSync(task), period);
+    public ScheduledFuture<?> scheduleAtFixedRate(Runnable task, Duration period) {
+        return taskScheduler.scheduleAtFixedRate(wrapSync(task), period);
     }
 
     @Override
-    public ScheduledFuture<?> scheduleWithFixedDelay(Runnable task, Date startTime, long delay) {
-        return super.scheduleWithFixedDelay(wrapSync(task), startTime, delay);
+    public ScheduledFuture<?> scheduleWithFixedDelay(Runnable task, Instant startTime, Duration delay) {
+        return taskScheduler.scheduleWithFixedDelay(wrapSync(task), startTime, delay);
     }
 
     @Override
-    public ScheduledFuture<?> scheduleWithFixedDelay(Runnable task, long delay) {
-        return super.scheduleWithFixedDelay(wrapSync(task), delay);
+    public ScheduledFuture<?> scheduleWithFixedDelay(Runnable task, Duration delay) {
+        return taskScheduler.scheduleWithFixedDelay(wrapSync(task), delay);
     }
-
-    @Override
-    public void execute(Runnable task) {
-        super.execute(context.wrap(task));
-    }
-
-    @Override
-    public Future<?> submit(Runnable task) {
-        return super.submit(context.wrap(task));
-    }
-
-    @Override
-    public <T> Future<T> submit(Callable<T> task) {
-        return super.submit(context.wrap(task));
-    }
-
-    @Override
-    public ListenableFuture<?> submitListenable(Runnable task) {
-        return super.submitListenable(context.wrap(task));
-    }
-
-    @Override
-    public <T> ListenableFuture<T> submitListenable(Callable<T> task) {
-        return super.submitListenable(context.wrap(task));
-    }
-
 }

@@ -51,13 +51,10 @@ class SpringSpigotAutoConfiguration {
     }
 
     @Bean
-    @Scope(SCOPE_SINGLETON)
-    @ConditionalOnBean(SchedulingConfiguration.class)
+    //@Scope(SCOPE_SINGLETON)
+    //@ConditionalOnBean(SchedulingConfiguration.class)
     public TaskScheduler taskScheduler(Context context, SchedulerService scheduler, @Value("${spigot.scheduler.poolSize:1}") int poolSize) {
-        val taskScheduler = new SpigotScheduler(scheduler, context);
-        taskScheduler.setPoolSize(poolSize);
-        taskScheduler.initialize();
-        return taskScheduler;
+        return new SpigotScheduler(scheduler, context);
     }
 
     @Bean(destroyMethod = "")
