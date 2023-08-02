@@ -40,6 +40,7 @@ dependencies {
     implementation("info.picocli:picocli:4.7.3")
     implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("io.reactivex.rxjava3:rxjava:3.0.4")
+    implementation("com.github.f4b6a3:ulid-creator:5.2.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test:3.1.1")
 
     compileOnly("org.projectlombok:lombok:1.18.28")
