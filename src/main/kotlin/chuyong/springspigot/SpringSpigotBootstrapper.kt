@@ -7,6 +7,7 @@ import chuyong.springspigot.config.ConfigurationPropertySource
 import chuyong.springspigot.event.EventService
 import chuyong.springspigot.util.CompoundClassLoader
 import chuyong.springspigot.util.YamlPropertiesFactory
+import com.google.common.util.concurrent.ThreadFactoryBuilder
 import org.bukkit.Bukkit
 import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin
@@ -34,7 +35,7 @@ class SpringSpigotBootstrapper : JavaPlugin() {
     private val masterClassLoader = CompoundClassLoader(Thread.currentThread().contextClassLoader, classLoader)
     private val logger = LoggerFactory.getLogger(SpringSpigotBootstrapper::class.java)
     lateinit var context: AnnotationConfigApplicationContext
-    private val springExecutor = Executors.newSingleThreadExecutor()
+    private val springExecutor = Executors.newSingleThreadExecutor(ThreadFactoryBuilder().setNameFormat("springspigot-initializer").build())
 
     override fun onEnable() {
         loadSpringSpigot()

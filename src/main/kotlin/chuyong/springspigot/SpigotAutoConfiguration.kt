@@ -16,9 +16,12 @@ import org.springframework.scheduling.TaskScheduler
 @Configuration
 @ConditionalOnClass(Bukkit::class)
 class SpigotAutoConfiguration {
-    @Bean
-    fun scopeBeanFactoryPostProcessor(): BeanFactoryPostProcessor {
-        return ScopePostProcessor()
+    companion object {
+        @JvmStatic
+        @Bean
+        fun scopeBeanFactoryPostProcessor(): BeanFactoryPostProcessor {
+            return ScopePostProcessor()
+        }
     }
 
     @Bean
