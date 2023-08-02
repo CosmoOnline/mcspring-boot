@@ -1,13 +1,12 @@
 package chuyong.springspigot.jpa.type
 
 import com.github.f4b6a3.ulid.Ulid
-import jakarta.persistence.AttributeConverter
-import jakarta.persistence.Converter
 import org.hibernate.engine.spi.SharedSessionContractImplementor
 import org.hibernate.usertype.UserType
 import java.io.Serializable
 import java.sql.PreparedStatement
 import java.sql.ResultSet
+import java.sql.Types
 
 class UlidType : UserType<Ulid> {
     override fun equals(x: Ulid?, y: Ulid?): Boolean {
@@ -55,8 +54,10 @@ class UlidType : UserType<Ulid> {
         index: Int,
         session: SharedSessionContractImplementor?,
     ) {
-        value?.apply {
-            st?.setString(index, toString())
+        if(value == null) {
+            st?.setNull(index, Types.CHAR)
+        }else {
+            st?.setString(index, value.toString())
         }
     }
 

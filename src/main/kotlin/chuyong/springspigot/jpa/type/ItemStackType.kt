@@ -60,7 +60,10 @@ class ItemStackType: UserType<ItemStack> {
         index: Int,
         session: SharedSessionContractImplementor?
     ) {
-        st?.setBytes(index, value?.let{convertToDatabaseColumn(it)})
+        if(value != null)
+            st?.setBytes(index, convertToDatabaseColumn(value))
+        else
+            st?.setNull(index, Types.BLOB)
     }
 
     private fun convertToDatabaseColumn(attribute: ItemStack?): ByteArray {
