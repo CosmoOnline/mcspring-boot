@@ -3,10 +3,33 @@
  */
 
 plugins {
-    `java-library`
     `maven-publish`
+    kotlin("jvm") version "1.8.0"
     id("com.github.johnrengelman.shadow") version "7.0.0"
+    kotlin("plugin.spring") version "1.8.0"
+    kotlin("plugin.jpa") version "1.8.0"
 }
+
+apply {
+    plugin("org.gradle.maven-publish")
+    plugin("org.jetbrains.kotlin.jvm")
+    plugin("com.github.johnrengelman.shadow")
+    plugin("org.jetbrains.kotlin.plugin.spring")
+    plugin("org.jetbrains.kotlin.plugin.jpa")
+}
+
+allOpen {
+    annotation("jakarta.persistence.Entity")
+    annotation("jakarta.persistence.MappedSuperclass")
+    annotation("jakarta.persistence.Embeddable")
+}
+
+noArg {
+    annotation("jakarta.persistence.Entity")
+    annotation("jakarta.persistence.MappedSuperclass")
+    annotation("jakarta.persistence.Embeddable")
+}
+
 
 repositories {
     mavenLocal()
@@ -26,10 +49,15 @@ repositories {
     }
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 dependencies {
     api("org.springframework.boot:spring-boot-starter:3.1.1")
     // https://mvnrepository.com/artifact/io.insert-koin/koin-core
     compileOnly("io.insert-koin:koin-core:3.4.2")
+    compileOnly("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa
     api("org.springframework.boot:spring-boot-starter-data-jpa:3.1.1")
@@ -54,21 +82,23 @@ version = "0.0.1"
 description = "Spring Boot Spigot Starter"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
-java {
-    withSourcesJar()
+tasks {
+    build {
+        dependsOn(shadowJar)
+    }
 }
 
 publishing {
     publications.create<MavenPublication>("maven") {
         artifactId = "spigot-spring-boot"
-        from(components["java"])
+        from(components["kotlin"])
     }
 }
 
-tasks.withType<JavaCompile>() {
-    options.encoding = "UTF-8"
-}
 
-tasks.withType<Javadoc>() {
-    options.encoding = "UTF-8"
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+        freeCompilerArgs = listOf("-Xjsr305=strict")
+        jvmTarget = "17"
+    }
 }

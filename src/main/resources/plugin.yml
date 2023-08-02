@@ -1,6 +1,6 @@
 name: SpigotSpring
 version: 0.20.7
-main: kr.chuyong.springspigot.SpringSpigotBootstrapper
+main: chuyong.springspigot.SpringSpigotBootstrapper
 
 softdepend:
   - HQFramework
