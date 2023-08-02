@@ -3,21 +3,21 @@ package chuyong.springspigot.command
 import chuyong.springspigot.command.annotation.CommandExceptionHandler
 import chuyong.springspigot.command.annotation.CommandMapping
 import chuyong.springspigot.command.data.CommandConfig
-import chuyong.springspigot.command.data.InvokeWrapper
+import chuyong.springspigot.command.data.ExceptionHandlerWrapper
 import chuyong.springspigot.command.data.SuperCommandConfig
+import jakarta.annotation.PostConstruct
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandMap
-import org.slf4j.LoggerFactory
 import org.springframework.aop.support.AopUtils
+import org.springframework.stereotype.Component
 import org.springframework.util.ReflectionUtils
 import java.lang.reflect.Method
-import java.util.*
 
-object BukkitCommandHandler {
-    private val logger = LoggerFactory.getLogger(BukkitCommandHandler::class.java)
+@Component
+class BukkitCommandHandler {
     private val mainCMD = HashMap<String, BukkitCommandImpl>()
-    var globalInstanceMap = HashMap<Class<*>, Any?>()
-    var exceptionHandlers = HashMap<Class<out Throwable>, InvokeWrapper>()
+    var exceptionHandlers = HashMap<Class<out Throwable>, ExceptionHandlerWrapper>()
+
     fun registerAdvices(obj: Any?) {
         try {
             val commandClazz = AopUtils.getTargetClass(obj!!)
@@ -27,7 +27,7 @@ object BukkitCommandHandler {
                         CommandExceptionHandler::class.java
                     )
                     for (aClass in annotation.value) {
-                        exceptionHandlers[aClass.java] = InvokeWrapper(mt, obj, null)
+                        exceptionHandlers[aClass.java] = ExceptionHandlerWrapper(mt, obj)
                     }
                 }
             }
@@ -77,7 +77,7 @@ object BukkitCommandHandler {
             commandMap.register(ano.value, a)
             mainCMD[ano.value] = a
             if (a.aliases.size < ano.aliases.size) {
-                a.aliases = Arrays.asList(*ano.aliases)
+                a.aliases = listOf(*ano.aliases)
             }
             a
         } catch (ex: Exception) {
@@ -92,7 +92,6 @@ object BukkitCommandHandler {
         mtd: Method,
         cl: Any,
     ): BukkitCommandImpl {
-        println("Register parent: " + parentKey + " child: " + Arrays.toString(childKey))
         return try {
             val bukkitCommandMap = Bukkit.getServer().javaClass.getDeclaredField("commandMap")
             bukkitCommandMap.isAccessible = true
@@ -107,10 +106,6 @@ object BukkitCommandHandler {
             Bukkit.getConsoleSender()
                 .sendMessage("§f§l[§6SpringSpigot§f§l] §a/" + container.fullKey + " §f§lCommand Successfully Initialized")
             bukkitCommand
-
-//            if (bukkitCommand.getAliases().size() < ano.aliases().length) {
-//                bukkitCommand.setAliases(Arrays.asList(ano.aliases()));
-//            }
         } catch (e: Exception) {
             e.printStackTrace()
             throw RuntimeException()

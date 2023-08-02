@@ -14,7 +14,7 @@ class SubCommandContainer(
     private var invokeWrapper: InvokeWrapper? = null
     fun childCommandKeys(): Collection<String> {
         val keys: Set<String> = childCommandMap.keys
-        return if (keys.isEmpty()) Arrays.asList(*config.suggestion) else keys
+        return keys.ifEmpty { listOf(*config.suggestion) }
     }
 
     val isImplemented: Boolean
@@ -33,7 +33,6 @@ class SubCommandContainer(
                 val remainingItems = remainingArgs.size + 1
                 //System.out.println("Remain : " + remainingItems + " wrapper " + invokeWrapper);
                 if (invokeWrapper == null) return null
-                if (config == null) return null
                 if (config.minArgs >= remainingItems && config
                         .maxArgs <= remainingItems
                 ) {
@@ -57,9 +56,7 @@ class SubCommandContainer(
 
     // "a b c"
     fun addCommand(args: Queue<String>, ano: CommandConfig?, mtd: Method?, cl: Any?): SubCommandContainer {
-        println("ADDCOMMAND $currentKey arr():$args")
         return if (args.isEmpty()) {
-            println("BINDED $currentKey on depth $commandDepth")
             if (invokeWrapper != null) {
                 throw RuntimeException("Duplicated command entry! Command: /" + fullKey)
             }
@@ -76,7 +73,7 @@ class SubCommandContainer(
     val method: Method
         get() = invokeWrapper!!.method
     val config: CommandConfig
-        get() = invokeWrapper!!.config!!
+        get() = invokeWrapper!!.config
     val pathClass: Any
         get() = invokeWrapper!!.obj
 

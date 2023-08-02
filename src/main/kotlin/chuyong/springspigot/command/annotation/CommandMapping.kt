@@ -1,8 +1,5 @@
 package chuyong.springspigot.command.annotation
 
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
-
 @Target(
     AnnotationTarget.FUNCTION,
     AnnotationTarget.PROPERTY_GETTER,
@@ -11,7 +8,7 @@ import java.lang.annotation.RetentionPolicy
     AnnotationTarget.CLASS
 )
 @Retention(
-    RetentionPolicy.RUNTIME
+    AnnotationRetention.RUNTIME
 )
 annotation class CommandMapping(
     val value: String = "",

@@ -6,10 +6,10 @@ data class CommandContext(
     val sender: CommandSender,
 ) {
     companion object {
-        val COMMAND_CONTEXT = ThreadLocal<CommandContext>()
+        private val COMMAND_CONTEXT = ThreadLocal<CommandContext>()
 
         @JvmStatic
-        var currentContext: CommandContext
+        var currentContext: CommandContext?
             get() = COMMAND_CONTEXT.get()
             set(context) {
                 COMMAND_CONTEXT.set(context)

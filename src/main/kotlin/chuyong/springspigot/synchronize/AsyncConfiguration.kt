@@ -1,7 +1,6 @@
 package chuyong.springspigot.synchronize
 
-import chuyong.springspigot.UtilAspect
-import lombok.RequiredArgsConstructor
+import chuyong.springspigot.command.CommandExceptionHandler
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.EnableAspectJAutoProxy
@@ -13,9 +12,8 @@ import java.util.concurrent.Executor
 @Configuration
 @EnableAspectJAutoProxy
 @EnableAsync
-@RequiredArgsConstructor
 class AsyncConfiguration(
-    private val utilAspect: UtilAspect,
+    private val commandExceptionHandler: CommandExceptionHandler,
 ) : AsyncConfigurer {
     override fun getAsyncExecutor(): Executor {
         val executor = ThreadPoolTaskExecutor()
@@ -29,6 +27,6 @@ class AsyncConfiguration(
     }
 
     override fun getAsyncUncaughtExceptionHandler(): AsyncUncaughtExceptionHandler {
-        return utilAspect
+        return commandExceptionHandler
     }
 }

@@ -11,7 +11,7 @@ import java.lang.reflect.Method
 import java.util.*
 
 class BukkitCommandImpl(baseLabel: String?) : BukkitCommand(baseLabel!!) {
-    val mainContainer = SubCommandContainer(null, label, 0)
+    val primaryContainer = SubCommandContainer(null, label, 0)
     var baseConfig: SuperCommandConfig? = null
 
     init {
@@ -25,18 +25,18 @@ class BukkitCommandImpl(baseLabel: String?) : BukkitCommand(baseLabel!!) {
         this.baseConfig = baseConfig
     }
 
-    fun getContainer(args: Array<String>): SubCommandContainer? {
-        return mainContainer.getContainer(LinkedList(Arrays.asList(*args)))
+    private fun getContainer(args: Array<String>): SubCommandContainer? {
+        return primaryContainer.getContainer(LinkedList(listOf(*args)))
     }
 
-    fun getTapCompleteContainer(args: Array<String>): SubCommandContainer {
-        return mainContainer.getTapCompleteContainer(LinkedList(Arrays.asList(*args)))
+    private fun getTapCompleteContainer(args: Array<String>): SubCommandContainer {
+        return primaryContainer.getTapCompleteContainer(LinkedList(listOf(*args)))
     }
 
     fun addCommand(subcommand: Array<String>, ano: CommandConfig?, mtd: Method?, cl: Any?): SubCommandContainer {
         val commandList = LinkedList(Arrays.asList(*subcommand))
         commandList.removeIf { element: String -> element == "" }
-        return mainContainer.addCommand(commandList, ano, mtd, cl)
+        return primaryContainer.addCommand(commandList, ano, mtd, cl)
     }
 
     override fun execute(sender: CommandSender, commandLabel: String, args: Array<String>): Boolean {
@@ -121,10 +121,7 @@ class BukkitCommandImpl(baseLabel: String?) : BukkitCommand(baseLabel!!) {
         val arr = arrayOfNulls<Any>(method.parameterCount)
         var pos = 0
         for (type in method.parameterTypes) {
-            var obj = paramContainer[type]
-            if (obj == null) {
-                obj = BukkitCommandHandler.globalInstanceMap[type]
-            }
+            val obj = paramContainer[type]
             arr[pos++] = obj
         }
         paramContainer.clear()

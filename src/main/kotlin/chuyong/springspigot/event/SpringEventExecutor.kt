@@ -1,6 +1,5 @@
 package chuyong.springspigot.event
 
-import lombok.SneakyThrows
 import org.bukkit.event.Event
 import org.bukkit.event.Listener
 import org.bukkit.plugin.EventExecutor
@@ -18,7 +17,6 @@ class SpringEventExecutor {
         }
     }
 
-    @SneakyThrows
     private fun triggerEvent(method: Method, listener: Listener, event: Event) {
         AopUtils.invokeJoinpointUsingReflection(listener, method, arrayOf<Any>(event))
     }

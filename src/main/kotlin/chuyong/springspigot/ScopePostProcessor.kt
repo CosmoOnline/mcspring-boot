@@ -8,14 +8,8 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
 import java.util.*
 
 internal class ScopePostProcessor : BeanFactoryPostProcessor {
-    //    private final SenderContextScope senderContextScope;
-    //
-    //    ScopePostProcessor(SenderContextScope senderContextScope) {
-    //        this.senderContextScope = senderContextScope;
-    //    }
     @Throws(BeansException::class)
     override fun postProcessBeanFactory(factory: ConfigurableListableBeanFactory) {
-        //   factory.registerScope("sender", senderContextScope);
         Arrays.stream(factory.beanDefinitionNames).forEach { beanName: String? ->
             val beanDef = factory.getBeanDefinition(
                 beanName!!
