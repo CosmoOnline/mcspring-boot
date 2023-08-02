@@ -3,6 +3,7 @@ package kr.chuyong.springspigot.commands;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
+import org.slf4j.MDC;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
@@ -91,7 +92,17 @@ public class BukkitCommandImpl extends BukkitCommand {
             uuid = ((Player) sender).getUniqueId();
         final UUID uk = uuid;
         Object[] target = paramBuilder(sc.getMethod(), getParamContainer(sender, args, this.getName()), uuid);
-        ReflectionUtils.invokeMethod(sc.getMethod(), sc.getPathClass(), target);
+        try{
+            CommandContext.setCurrentContext(new CommandContext(sender));
+            sc.getMethod().invoke(sc.getPathClass(), target);
+        }catch(Exception e) {
+            //Must handled front
+            e.printStackTrace();
+        } finally {
+            CommandContext.clearContext();
+        }
+
+      //  ReflectionUtils.invokeMethod(sc.getMethod(), sc.getPathClass(), target);
     }
 
     private HashMap<Class<?>, Object> getParamContainer(CommandSender sender, String[] args, String label) {

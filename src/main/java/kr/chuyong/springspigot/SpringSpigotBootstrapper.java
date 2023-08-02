@@ -1,5 +1,6 @@
 package kr.chuyong.springspigot;
 
+import kr.chuyong.springspigot.annotation.CommandAdvice;
 import kr.chuyong.springspigot.annotation.CommandController;
 import kr.chuyong.springspigot.annotation.CommandMapping;
 import kr.chuyong.springspigot.commands.BukkitCommandHandler;
@@ -127,6 +128,11 @@ public final class SpringSpigotBootstrapper extends JavaPlugin {
         });
         ctx.refresh();
         context = ctx;
+
+        val commandAdvices = context.getBeansWithAnnotation(CommandAdvice.class);
+        commandAdvices.forEach((t, ob) -> {
+            BukkitCommandHandler.registerAdvices(ob);
+        });
 
         val commandControllers = context.getBeansWithAnnotation(CommandController.class);
         commandControllers.forEach((t, ob) -> {

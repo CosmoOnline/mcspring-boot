@@ -1,5 +1,6 @@
 package kr.chuyong.springspigot.commands;
 
+import kr.chuyong.springspigot.annotation.CommandExceptionHandler;
 import kr.chuyong.springspigot.annotation.CommandMapping;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
@@ -17,6 +18,23 @@ public class BukkitCommandHandler {
     private static final Logger logger = LoggerFactory.getLogger(BukkitCommandHandler.class);
     private static final HashMap<String, BukkitCommandImpl> mainCMD = new HashMap<>();
     protected static HashMap<Class<?>, Object> globalInstanceMap = new HashMap<>();
+    public static HashMap<Class<? extends Throwable>, InvokeWrapper> exceptionHandlers = new HashMap<>();
+
+    public static void registerAdvices(Object obj) {
+        try {
+            Class<?> commandClazz = AopUtils.getTargetClass(obj);
+            for (Method mt : ReflectionUtils.getAllDeclaredMethods(commandClazz)) {
+                if(mt.isAnnotationPresent(CommandExceptionHandler.class)) {
+                    CommandExceptionHandler annotation = mt.getAnnotation(CommandExceptionHandler.class);
+                    for (Class<? extends Throwable> aClass : annotation.value()) {
+                        exceptionHandlers.put(aClass, new InvokeWrapper(mt, obj, null));
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
     public static void registerCommands(Object cls) {
         try {
