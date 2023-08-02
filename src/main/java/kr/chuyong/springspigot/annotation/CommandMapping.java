@@ -26,11 +26,12 @@ public @interface CommandMapping {
 
     String[] aliases() default {};
 
-    String[] subcommand() default {};
+    String[] suggestion() default {};
 
     int minArgs() default 0;
 
     int maxArgs() default 100;
+    boolean defaultSuggestion() default true;
 
     boolean op() default false;
 

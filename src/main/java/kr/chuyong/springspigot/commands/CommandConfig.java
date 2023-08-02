@@ -9,10 +9,12 @@ public record CommandConfig(
         String errorMessage,
         String noPermMessage,
         String noConsoleMessage,
+        String[] suggestion,
         int minArgs,
         int maxArgs,
         boolean op,
-        boolean console
+        boolean console,
+        boolean defaultSuggestion
 ) {
     public static CommandConfig fromAnnotation(CommandMapping mapping) {
         return new CommandConfig(
@@ -22,10 +24,12 @@ public record CommandConfig(
                 mapping.error(),
                 mapping.noPerm(),
                 mapping.noConsole(),
+                mapping.suggestion(),
                 mapping.minArgs(),
                 mapping.maxArgs(),
                 mapping.op(),
-                mapping.console()
+                mapping.console(),
+                mapping.defaultSuggestion()
         );
     }
 

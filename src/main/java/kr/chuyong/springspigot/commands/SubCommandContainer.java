@@ -1,9 +1,7 @@
 package kr.chuyong.springspigot.commands;
 
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Queue;
+import java.util.*;
 
 public class SubCommandContainer {
     private final SubCommandContainer parent;
@@ -23,7 +21,8 @@ public class SubCommandContainer {
     }
 
     public Collection<String> childCommandKeys() {
-        return childCommandMap.keySet();
+        Set<String> keys = childCommandMap.keySet();
+        return keys.isEmpty() ? Arrays.asList(getConfig().suggestion()) : keys;
     }
 
     public boolean isImplemented() {
@@ -48,6 +47,20 @@ public class SubCommandContainer {
                 } else {
                     return null;
                 }
+            }
+        }
+    }
+
+    public SubCommandContainer getTapCompleteContainer(Queue<String> remainingArgs) {
+        if (remainingArgs.isEmpty()) {
+            return this;
+        } else {
+            String nextArg = remainingArgs.poll();
+            SubCommandContainer nextCommand = childCommandMap.get(nextArg);
+            if (nextCommand != null) {
+                return nextCommand.getTapCompleteContainer(remainingArgs);
+            } else {
+                return this;
             }
         }
     }

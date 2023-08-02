@@ -67,18 +67,17 @@ class UtilAspect implements AsyncUncaughtExceptionHandler {
 
     @AfterThrowing(pointcut = "commandMappingPointcut(commandMapping)", throwing = "ex")
     public void handleCommandMappingException(JoinPoint joinPoint, CommandMapping commandMapping, Exception ex) {
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        Method method = signature.getMethod();
-        handleCommandMappingException(ex, method);
+        handleCommandMappingException(ex);
     }
 
     @Override
     public void handleUncaughtException(Throwable ex, Method method, Object... params) {
         //Async로 발생한거긴 한데;; 씹어야해 ㅠㅠ
 
+        ex.printStackTrace();
     }
 
-    public void handleCommandMappingException(Throwable ex, Method method) {
+    public void handleCommandMappingException(Throwable ex) {
         for (Map.Entry<Class<? extends Throwable>, InvokeWrapper> entry : BukkitCommandHandler.exceptionHandlers.entrySet()) {
             if(entry.getKey().isInstance(ex)) {
                 try {
@@ -87,7 +86,9 @@ class UtilAspect implements AsyncUncaughtExceptionHandler {
                     HashMap<Class<?>, Object> paramContainer = new HashMap<>();
                     paramContainer.put(CommandContext.class, context);
                     paramContainer.put(CommandSender.class, context.getSender());
-                    Object[] builtParam = paramBuilder(method, paramContainer);
+                    paramContainer.put(entry.getKey(), ex);
+                    paramContainer.put(Throwable.class, ex);
+                    Object[] builtParam = paramBuilder(entry.getValue().commandMethod(), paramContainer);
 
                     entry.getValue().commandMethod().invoke(entry.getValue().objectInstance(), builtParam);
                 } catch (IllegalAccessException | InvocationTargetException e) {
@@ -106,7 +107,9 @@ class UtilAspect implements AsyncUncaughtExceptionHandler {
         for (Class<?> type : method.getParameterTypes()) {
             Object obj = paramContainer.get(type);
             if (obj == null) {
-                throw new RuntimeException("Unknown Exception Handler parameter type: " + type.getName());
+                obj = paramContainer.get(type.getSuperclass());
+                if(obj == null)
+                    throw new RuntimeException("Unknown Exception Handler parameter type: " + type.getName());
             }
             arr[pos++] = obj;
         }

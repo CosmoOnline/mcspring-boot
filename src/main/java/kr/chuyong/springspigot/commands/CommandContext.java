@@ -10,10 +10,7 @@ public class CommandContext {
     public static final ThreadLocal<CommandContext> COMMAND_CONTEXT = new ThreadLocal<>();
 
     public static CommandContext getCurrentContext() {
-        if (COMMAND_CONTEXT.get() != null) {
-            return COMMAND_CONTEXT.get();
-        }
-        throw new NullPointerException("why??");
+        return COMMAND_CONTEXT.get();
     }
 
     public static void setCurrentContext(CommandContext context) {

@@ -34,6 +34,10 @@ public class BukkitCommandImpl extends BukkitCommand {
         return mainContainer.getContainer(new LinkedList<>(Arrays.asList(args)));
     }
 
+    public SubCommandContainer getTapCompleteContainer(String[] args) {
+        return mainContainer.getTapCompleteContainer(new LinkedList<>(Arrays.asList(args)));
+    }
+
     public SubCommandContainer addCommand(String[] subcommand, CommandConfig ano, Method mtd, Object cl) {
         LinkedList<String> commandList = new LinkedList<>(Arrays.asList(subcommand));
         commandList.removeIf(element -> element.equals(""));
@@ -64,9 +68,18 @@ public class BukkitCommandImpl extends BukkitCommand {
 
     @Override
     public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
-        SubCommandContainer sc = getContainer(args);
+        SubCommandContainer sc = getTapCompleteContainer(args);
         if (sc == null) return super.tabComplete(sender, alias, args);
+
         Collection<String> keys = sc.childCommandKeys();
+        if(keys.isEmpty() && sc.getConfig().defaultSuggestion()) {
+            return super.tabComplete(sender, alias, args);
+        }
+
+        if(args.length != 0) {
+            String lastArgs = args[args.length - 1];
+            return keys.stream().filter(key -> key.startsWith(lastArgs)).toList();
+        }
         return keys.stream().toList();
     }
 
