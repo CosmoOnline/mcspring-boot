@@ -1,18 +1,20 @@
 plugins {
     `maven-publish`
+    val kotlinVersion = "1.8.0"
     kotlin("jvm") version "1.8.0"
     id("com.github.johnrengelman.shadow") version "7.0.0"
     kotlin("plugin.spring") version "1.8.0"
     kotlin("plugin.jpa") version "1.8.0"
+    kotlin("kapt") version kotlinVersion
 }
 
-apply {
-    plugin("org.gradle.maven-publish")
-    plugin("org.jetbrains.kotlin.jvm")
-    plugin("com.github.johnrengelman.shadow")
-    plugin("org.jetbrains.kotlin.plugin.spring")
-    plugin("org.jetbrains.kotlin.plugin.jpa")
-}
+//apply {
+//    plugin("org.gradle.maven-publish")
+//    plugin("org.jetbrains.kotlin.jvm")
+//    plugin("com.github.johnrengelman.shadow")
+//    plugin("org.jetbrains.kotlin.plugin.spring")
+//    plugin("org.jetbrains.kotlin.plugin.jpa")
+//}
 
 allOpen {
     annotation("jakarta.persistence.Entity")
@@ -65,7 +67,12 @@ dependencies {
     implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("io.reactivex.rxjava3:rxjava:3.0.4")
     implementation("com.github.f4b6a3:ulid-creator:5.2.0")
+    implementation("com.h2database:h2:1.4.200")
     testImplementation("org.springframework.boot:spring-boot-starter-test:3.1.1")
+
+    implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
+    kapt("com.querydsl:querydsl-apt:5.0.0:jakarta")
+    kapt("com.querydsl:querydsl-kotlin-codegen:5.0.0")
 
     compileOnly("org.spigotmc:spigot-api:1.19.4-R0.1-SNAPSHOT")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")

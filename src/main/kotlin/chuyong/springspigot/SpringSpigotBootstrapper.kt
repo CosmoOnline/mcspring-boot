@@ -14,20 +14,16 @@ import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
 import org.slf4j.LoggerFactory
 import org.springframework.aop.support.AopUtils
-import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.core.env.MutablePropertySources
 import org.springframework.core.env.PropertiesPropertySource
-import org.springframework.core.env.PropertySource
 import org.springframework.core.io.DefaultResourceLoader
 import org.springframework.core.io.FileSystemResource
 import org.springframework.util.StopWatch
 import java.io.File
-import java.net.URL
 import java.net.URLClassLoader
 import java.util.*
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.function.Consumer
 
@@ -79,20 +75,25 @@ class SpringSpigotBootstrapper : JavaPlugin() {
         Bukkit.getConsoleSender()
             .sendMessage("§f§l[§6SpringSpigot§f§l] §f§lBaking Custom ClassLoader Completed...")
 
-
-        Bukkit.getConsoleSender()
-            .sendMessage("§f§l[§6SpringSpigot§f§l] §f§lLoading SpringBoot...")
         CompletableFuture.runAsync({
+            Bukkit.getConsoleSender()
+                .sendMessage("§f§l[§6SpringSpigot§f§l] §f§lLoading SpringBoot...")
             Thread.currentThread().contextClassLoader = masterClassLoader
             context = AnnotationConfigApplicationContext()
 
             context.apply {
                 setResourceLoader(DefaultResourceLoader(combinedLoader))
                 classLoader = combinedLoader
+
+                val configurationFile = FileSystemResource("application.yml")
+                if(!configurationFile.exists()) {
+                    logger.warn("application.yml not found. Creating new one...")
+                    configurationFile.file.createNewFile()
+                }
                 environment.propertySources.addLast(
                     PropertiesPropertySource(
                         "main-yaml",
-                        YamlPropertiesFactory.loadYamlIntoProperties(FileSystemResource("application.yml"))!!
+                        YamlPropertiesFactory.loadYamlIntoProperties(configurationFile)!!
                     )
                 )
                 val propertySources: MutablePropertySources = this.environment.propertySources
